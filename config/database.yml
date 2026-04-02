@@ -79,6 +79,4 @@ test:
 #
 production:
   <<: *default
-  database: portusalud_production
-  username: portusalud
-  password: <%= ENV["PORTUSALUD_DATABASE_PASSWORD"] %>
+  url: <%= ENV["DATABASE_URL"] %>

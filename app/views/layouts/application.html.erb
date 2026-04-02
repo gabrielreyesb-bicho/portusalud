@@ -17,20 +17,19 @@
   <body class="bg-white text-pts-900 font-sans antialiased min-h-screen">
 
     <%# Barra de navegación %>
-    <header class="border-b border-pts-200 bg-white">
-      <nav class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-        <%= link_to root_path, class: "flex items-center gap-2 no-underline" do %>
-          <span class="text-pts-800 font-semibold text-lg leading-none">portusalud</span>
-          <span class="text-pts-400 text-sm font-normal">.org</span>
+    <header class="bg-pts-900 shadow-md">
+      <nav class="max-w-5xl mx-auto px-4 py-2 flex items-center justify-between">
+        <%= link_to root_path, class: "flex items-center no-underline" do %>
+          <%= image_tag "logo.png", alt: "portusalud", class: "h-12 w-auto" %>
         <% end %>
 
         <div class="flex items-center gap-4 text-sm">
           <% if user_signed_in? %>
-            <%= link_to "Mis medicinas", mis_medicinas_path, class: "text-pts-700 font-medium hover:text-pts-500" %>
-            <%= link_to "Salir", destroy_user_session_path, data: { turbo_method: :delete }, class: "text-pts-600 hover:text-pts-500" %>
+            <%= link_to "Mis medicinas", mis_medicinas_path, class: "text-pts-200 font-medium hover:text-white" %>
+            <%= link_to "Salir", destroy_user_session_path, data: { turbo_method: :delete }, class: "text-pts-300 hover:text-white" %>
           <% else %>
-            <%= link_to "Iniciar sesión", new_user_session_path, class: "text-pts-700 font-medium hover:text-pts-500" %>
-            <%= link_to "Registrarse", new_user_registration_path, class: "bg-pts-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-pts-600 transition-colors" %>
+            <%= link_to "Iniciar sesión", new_user_session_path, class: "text-pts-200 font-medium hover:text-white" %>
+            <%= link_to "Registrarse", new_user_registration_path, class: "bg-pts-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-pts-400 transition-colors" %>
           <% end %>
         </div>
       </nav>
