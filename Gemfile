@@ -37,7 +37,7 @@ gem "caxlsx_rails"
 
 # Panel de administración interno
 gem "activeadmin"
-gem "sassc", "~> 2.1"
+gem "dartsass-sprockets"
 gem "ransack"
 
 # Variables de entorno
