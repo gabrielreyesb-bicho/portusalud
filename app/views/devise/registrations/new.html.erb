@@ -1,0 +1,59 @@
+<%# Registro de usuario — /cuenta/registro %>
+
+<div class="min-h-[70vh] flex items-center justify-center px-4 py-12">
+  <div class="w-full max-w-sm">
+
+    <div class="text-center mb-8">
+      <h1 class="text-2xl font-semibold text-pts-800">Crear cuenta</h1>
+      <p class="text-sm text-pts-600 mt-2">Guarda tus medicamentos y calcula tu gasto mensual</p>
+    </div>
+
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name),
+                 html: { class: "space-y-4" }) do |f| %>
+
+      <%= render "devise/shared/error_messages", resource: resource %>
+
+      <div>
+        <%= f.label :email, "Correo electrónico",
+            class: "block text-sm font-medium text-pts-700 mb-1" %>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email",
+            class: "w-full px-4 py-3 text-base border border-pts-300 rounded-xl
+                    focus:outline-none focus:ring-2 focus:ring-pts-400 focus:border-pts-400
+                    text-pts-900 placeholder-pts-300",
+            placeholder: "tu@correo.com" %>
+      </div>
+
+      <div>
+        <%= f.label :password, "Contraseña",
+            class: "block text-sm font-medium text-pts-700 mb-1" %>
+        <% if @minimum_password_length %>
+          <p class="text-xs text-pts-500 mb-1">Mínimo <%= @minimum_password_length %> caracteres</p>
+        <% end %>
+        <%= f.password_field :password, autocomplete: "new-password",
+            class: "w-full px-4 py-3 text-base border border-pts-300 rounded-xl
+                    focus:outline-none focus:ring-2 focus:ring-pts-400 focus:border-pts-400
+                    text-pts-900" %>
+      </div>
+
+      <div>
+        <%= f.label :password_confirmation, "Confirmar contraseña",
+            class: "block text-sm font-medium text-pts-700 mb-1" %>
+        <%= f.password_field :password_confirmation, autocomplete: "new-password",
+            class: "w-full px-4 py-3 text-base border border-pts-300 rounded-xl
+                    focus:outline-none focus:ring-2 focus:ring-pts-400 focus:border-pts-400
+                    text-pts-900" %>
+      </div>
+
+      <%= f.submit "Crear cuenta",
+          class: "w-full py-3 bg-pts-500 text-white font-medium rounded-xl
+                  hover:bg-pts-600 active:bg-pts-700 transition-colors cursor-pointer text-base" %>
+
+    <% end %>
+
+    <div class="mt-6 text-center text-sm">
+      <%= link_to "¿Ya tienes cuenta? Inicia sesión", new_user_session_path,
+          class: "text-pts-500 font-medium hover:text-pts-600" %>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,46 @@
+<%# Calculadora de ahorro — visible solo cuando hay innovador y genérico en el mismo comparativo.
+    Variables locales: best_innovador_entry, best_generic_entry, savings_monthly, savings_annual %>
+
+<section class="rounded-xl bg-pts-50 border border-pts-200 p-5">
+  <h2 class="text-base font-semibold text-pts-800 mb-1">Calculadora de ahorro</h2>
+  <p class="text-sm text-pts-600 mb-4">
+    Estimado basado en 30 piezas al mes (uso mensual estándar).
+  </p>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+    <div class="bg-white rounded-lg p-4 border border-pts-200">
+      <p class="text-xs text-pts-600 mb-1">Pagando con <%= best_innovador_entry.pharmacy.name %></p>
+      <p class="text-lg font-semibold text-pts-800">
+        $<%= number_with_precision(best_innovador_entry.price_per_unit * 30, precision: 2) %>
+        <span class="text-sm font-normal text-pts-600">/mes</span>
+      </p>
+      <p class="text-xs text-pts-500 mt-0.5"><%= best_innovador_entry.drug.name %></p>
+    </div>
+
+    <div class="bg-white rounded-lg p-4 border border-pts-500">
+      <p class="text-xs text-pts-600 mb-1">Pagando con <%= best_generic_entry.pharmacy.name %></p>
+      <p class="text-lg font-semibold text-pts-500">
+        $<%= number_with_precision(best_generic_entry.price_per_unit * 30, precision: 2) %>
+        <span class="text-sm font-normal text-pts-600">/mes</span>
+      </p>
+      <p class="text-xs text-pts-500 mt-0.5"><%= best_generic_entry.drug.name %> (genérico)</p>
+    </div>
+
+    <div class="bg-pts-500 rounded-lg p-4 text-white">
+      <p class="text-xs text-pts-100 mb-1">Ahorro potencial</p>
+      <p class="text-2xl font-semibold">
+        $<%= number_with_precision(savings_annual, precision: 0) %>
+        <span class="text-base font-normal text-pts-100">/año</span>
+      </p>
+      <p class="text-xs text-pts-100 mt-0.5">
+        $<%= number_with_precision(savings_monthly, precision: 2) %> al mes
+      </p>
+    </div>
+
+  </div>
+
+  <p class="text-xs text-pts-600 mt-3">
+    * El cálculo es estimado. Los precios reales pueden variar. Consulta a tu médico antes de cambiar de medicamento.
+  </p>
+</section>

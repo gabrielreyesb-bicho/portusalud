@@ -1,0 +1,4 @@
+<%# Solo se ejecuta cuando el destroy viene desde el comparativo — cambia el botón %>
+<%= turbo_stream.replace "save_drug_#{@drug.id}" do %>
+  <%= render "comparisons/save_button", drug: @drug, saved: false %>
+<% end %>

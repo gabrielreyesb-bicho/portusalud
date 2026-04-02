@@ -1,0 +1,15 @@
+<%# Una sugerencia individual en el dropdown de autocompletado %>
+<button type="button"
+        class="w-full text-left px-4 py-3 hover:bg-pts-50 focus:bg-pts-50
+               focus:outline-none border-b border-pts-100 last:border-0
+               transition-colors group"
+        data-action="click->search#selectSuggestion"
+        data-slug="<%= drug.slug %>">
+  <span class="block text-sm font-medium text-pts-800 group-hover:text-pts-500">
+    <%= drug.name %> <%= drug.dosage %>
+  </span>
+  <span class="block text-xs text-pts-600 mt-0.5">
+    <%= drug.active_ingredient.capitalize %>
+    <% if drug.form.present? %>· <%= drug.form %><% end %>
+  </span>
+</button>

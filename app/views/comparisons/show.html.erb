@@ -1,0 +1,168 @@
+<%# Pantalla de comparativo de precios — /comparar/:slug %>
+
+<div class="max-w-3xl mx-auto px-4 py-8" data-controller="comparisons">
+
+  <%# Enlace de regreso %>
+  <div class="mb-6">
+    <%= link_to "← Volver a la búsqueda", buscar_path(q: @drug.active_ingredient),
+        class: "text-sm text-pts-600 hover:text-pts-500 transition-colors" %>
+  </div>
+
+  <%# ── Encabezado del medicamento ── %>
+  <header class="mb-6 pb-6 border-b border-pts-200">
+    <div class="flex items-start justify-between gap-4 flex-wrap">
+      <div>
+        <h1 class="text-2xl font-semibold text-pts-800 leading-snug">
+          <%= @drug.active_ingredient.capitalize %>
+          <span class="text-pts-600 font-normal"><%= @drug.dosage %></span>
+        </h1>
+        <p class="text-sm text-pts-600 mt-1">
+          <%= [@drug.form, @drug.via].compact.map(&:capitalize).join(" · ") %>
+          <% if @drug.therapeutic_group.present? %>
+            <span class="text-pts-300 mx-1">·</span><%= @drug.therapeutic_group %>
+          <% end %>
+        </p>
+      </div>
+      <div class="flex flex-col items-end gap-2">
+        <div class="flex flex-wrap gap-2 justify-end">
+          <% if @drug.requires_prescription? %>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700">
+              Requiere receta
+            </span>
+          <% end %>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pts-50 text-pts-700">
+            <%= @price_entries.size %> <%= @price_entries.size == 1 ? "precio disponible" : "precios disponibles" %>
+          </span>
+        </div>
+        <%# Botón guardar — se actualiza via Turbo Stream %>
+        <% saved = user_signed_in? && current_user.user_medications.exists?(drug: @drug) %>
+        <%= render "save_button", drug: @drug, saved: saved %>
+      </div>
+    </div>
+  </header>
+
+  <%# ── Barra de controles: filtros + ordenamiento + toggle de vista ── %>
+  <div class="mb-6 flex flex-col gap-3">
+
+    <%# Fila superior: filtros y toggle de vista %>
+    <div class="flex flex-wrap items-center justify-between gap-3">
+
+      <%# Filtros de tipo %>
+      <div class="flex flex-wrap gap-2">
+        <% [["todos", "Todos"], ["genericos", "Genéricos"], ["innovador", "Referencia"], ["promocion", "Con promoción"]].each do |type, label| %>
+          <button type="button"
+                  class="px-3 py-1.5 text-sm font-medium rounded-lg border transition-colors
+                         <%= type == 'todos' ? 'bg-pts-500 text-white border-pts-500' : 'text-pts-700 border-pts-200 hover:border-pts-400' %>"
+                  data-comparisons-target="filterBtn"
+                  data-filter-type="<%= type %>"
+                  data-action="click->comparisons#filter">
+            <%= label %>
+          </button>
+        <% end %>
+      </div>
+
+      <%# Toggle tarjetas / tabla %>
+      <div class="flex rounded-lg border border-pts-200 overflow-hidden shrink-0">
+        <button type="button"
+                class="px-3 py-1.5 text-sm font-medium transition-colors bg-pts-500 text-white border-pts-500"
+                data-comparisons-target="viewBtn"
+                data-view="cards"
+                data-action="click->comparisons#toggleView"
+                title="Vista de tarjetas">
+          ▦ Tarjetas
+        </button>
+        <button type="button"
+                class="px-3 py-1.5 text-sm font-medium transition-colors text-pts-600 border-l border-pts-200 hover:bg-pts-50"
+                data-comparisons-target="viewBtn"
+                data-view="table"
+                data-action="click->comparisons#toggleView"
+                title="Vista de tabla">
+          ≡ Tabla
+        </button>
+      </div>
+    </div>
+
+    <%# Fila inferior: ordenamiento (solo relevante en vista tarjetas) %>
+    <div class="flex items-center gap-2">
+      <label class="text-xs text-pts-600 whitespace-nowrap">Ordenar por</label>
+      <select class="text-sm border border-pts-200 rounded-lg px-3 py-1.5 text-pts-800
+                     focus:outline-none focus:ring-2 focus:ring-pts-400"
+              data-comparisons-target="sortSelect"
+              data-action="change->comparisons#sort">
+        <option value="precio_pieza">Precio por pieza</option>
+        <option value="precio_caja">Precio por caja</option>
+        <option value="nombre">Nombre del oferente</option>
+      </select>
+    </div>
+  </div>
+
+  <%# ══════════════════════════════════════════════════════════════════════════
+      VISTA TARJETAS (predeterminada)
+  ══════════════════════════════════════════════════════════════════════════ %>
+  <div data-comparisons-target="cardsView">
+
+    <% if @generic_entries.any? %>
+      <section class="mb-8">
+        <h2 class="text-xs font-medium text-pts-600 uppercase tracking-wide mb-3">
+          Genéricos intercambiables
+        </h2>
+        <div class="flex flex-col gap-4" data-comparisons-target="cardList">
+          <% @generic_entries.each do |entry| %>
+            <%= render "price_card",
+                       entry: entry,
+                       is_best_price: entry == @best_price_entry,
+                       is_best_innovador: false %>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+
+    <% if @innovador_entries.any? %>
+      <section class="mb-8">
+        <h2 class="text-xs font-medium text-pts-600 uppercase tracking-wide mb-3">
+          Medicamento de referencia
+        </h2>
+        <div class="flex flex-col gap-4" data-comparisons-target="cardList">
+          <% @innovador_entries.each do |entry| %>
+            <%= render "price_card",
+                       entry: entry,
+                       is_best_price: entry == @best_price_entry,
+                       is_best_innovador: entry == @best_innovador_entry %>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+
+  </div>
+
+  <%# ══════════════════════════════════════════════════════════════════════════
+      VISTA TABLA (oculta por defecto)
+  ══════════════════════════════════════════════════════════════════════════ %>
+  <div data-comparisons-target="tableView" class="hidden mb-8">
+    <%= render "price_table",
+               generic_entries:    @generic_entries,
+               innovador_entries:  @innovador_entries,
+               best_price_entry:   @best_price_entry,
+               best_innovador_entry: @best_innovador_entry %>
+  </div>
+
+  <%# ── Calculadora de ahorro ── %>
+  <% if @savings_annual&.positive? %>
+    <div class="mb-8">
+      <%= render "savings_calculator",
+                 best_innovador_entry: @best_innovador_entry,
+                 best_generic_entry:   @best_generic_entry,
+                 savings_monthly:      @savings_monthly,
+                 savings_annual:       @savings_annual %>
+    </div>
+  <% end %>
+
+  <%# ── Sin resultados ── %>
+  <% if @price_entries.empty? %>
+    <div class="text-center py-16">
+      <p class="text-base text-pts-700">No hay precios disponibles para este medicamento todavía.</p>
+      <p class="text-sm text-pts-600 mt-2">Los datos se actualizan periódicamente.</p>
+    </div>
+  <% end %>
+
+</div>

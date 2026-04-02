@@ -1,0 +1,53 @@
+services:
+  # Aplicación Rails principal
+  - type: web
+    name: portusalud
+    runtime: ruby
+    buildCommand: bundle install && bundle exec rails assets:precompile && bundle exec rails db:migrate
+    startCommand: bundle exec puma -C config/puma.rb
+    envVars:
+      - key: RAILS_ENV
+        value: production
+      - key: RAILS_MASTER_KEY
+        sync: false  # Ingresar manualmente en el dashboard de Render
+      - key: DATABASE_URL
+        fromDatabase:
+          name: portusalud-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: portusalud-redis
+          type: redis
+          property: connectionString
+      - key: WEB_CONCURRENCY
+        value: "2"
+
+  # Worker de Sidekiq para jobs en background (pipeline de ingesta de datos)
+  - type: worker
+    name: portusalud-worker
+    runtime: ruby
+    buildCommand: bundle install
+    startCommand: bundle exec sidekiq
+    envVars:
+      - key: RAILS_ENV
+        value: production
+      - key: RAILS_MASTER_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: portusalud-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: portusalud-redis
+          type: redis
+          property: connectionString
+
+databases:
+  - name: portusalud-db
+    databaseName: portusalud
+    user: portusalud
+    plan: starter
+
+  - name: portusalud-redis
+    plan: starter

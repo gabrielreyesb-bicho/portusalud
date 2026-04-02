@@ -1,0 +1,29 @@
+<%# Botón "Guardar en Mis medicinas" con estado guardado/no guardado.
+    Se actualiza via Turbo Stream sin recargar la página. %>
+
+<div id="save_drug_<%= drug.id %>">
+  <% if !user_signed_in? %>
+    <%= link_to new_user_session_path,
+        class: "inline-flex items-center gap-2 px-4 py-2 border border-pts-300 rounded-xl
+                text-sm font-medium text-pts-700 hover:bg-pts-50 transition-colors" do %>
+      <span>♡</span> Guardar en Mis medicinas
+    <% end %>
+
+  <% elsif saved %>
+    <%= button_to quitar_medicamento_path(drug_id: drug.id),
+        method: :delete,
+        class: "inline-flex items-center gap-2 px-4 py-2 bg-pts-50 border border-pts-500
+                rounded-xl text-sm font-medium text-pts-700 hover:bg-red-50 hover:border-red-300
+                hover:text-red-600 transition-colors cursor-pointer" do %>
+      <span>✓</span> Guardado en Mis medicinas
+    <% end %>
+
+  <% else %>
+    <%= button_to guardar_medicamento_path(drug_id: drug.id),
+        method: :post,
+        class: "inline-flex items-center gap-2 px-4 py-2 border border-pts-300 rounded-xl
+                text-sm font-medium text-pts-700 hover:bg-pts-50 transition-colors cursor-pointer" do %>
+      <span>♡</span> Guardar en Mis medicinas
+    <% end %>
+  <% end %>
+</div>

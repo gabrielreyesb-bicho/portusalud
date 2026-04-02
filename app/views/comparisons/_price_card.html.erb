@@ -1,0 +1,92 @@
+<%# Tarjeta de precio por farmacia en el comparativo.
+    Variables locales: entry (PriceEntry), is_best_price (boolean), is_best_innovador (boolean) %>
+
+<% is_best  = local_assigns.fetch(:is_best_price, false)
+   is_best_inno = local_assigns.fetch(:is_best_innovador, false) %>
+
+<article class="relative border rounded-xl p-5 bg-white transition-all
+                <%= is_best ? 'border-pts-500 shadow-md' : 'border-pts-200 hover:border-pts-300 hover:shadow-sm' %>"
+         data-comparisons-target="card"
+         data-drug-type="<%= entry.drug.drug_type %>"
+         data-price-per-unit="<%= entry.price_per_unit %>"
+         data-price-per-box="<%= entry.price_per_box %>"
+         data-pharmacy-name="<%= entry.pharmacy.name %>"
+         data-has-promotion="<%= entry.promotion.present? %>">
+
+  <%# Badge "Mejor precio" — posicionado arriba a la derecha %>
+  <% if is_best %>
+    <span class="absolute -top-3 right-4 inline-flex items-center px-3 py-1 rounded-full
+                 text-xs font-medium bg-pts-500 text-white shadow-sm">
+      Mejor precio
+    </span>
+  <% elsif is_best_inno %>
+    <span class="absolute -top-3 right-4 inline-flex items-center px-3 py-1 rounded-full
+                 text-xs font-medium bg-blue-600 text-white shadow-sm">
+      Mejor precio referencia
+    </span>
+  <% end %>
+
+  <div class="flex items-start gap-4">
+
+    <%# Logo de farmacia (placeholder hasta que se carguen assets reales) %>
+    <div class="w-12 h-12 rounded-lg bg-pts-50 border border-pts-100 flex items-center justify-center shrink-0 overflow-hidden">
+      <% if entry.pharmacy.logo.attached? %>
+        <%= image_tag entry.pharmacy.logo, class: "w-full h-full object-contain", alt: entry.pharmacy.name %>
+      <% else %>
+        <span class="text-pts-500 font-semibold text-sm leading-none text-center px-1">
+          <%= entry.pharmacy.name.split.map(&:first).first(2).join %>
+        </span>
+      <% end %>
+    </div>
+
+    <%# Información principal %>
+    <div class="flex-1 min-w-0">
+      <div class="flex items-start justify-between gap-2 flex-wrap">
+        <div>
+          <h3 class="text-base font-semibold text-pts-800"><%= entry.pharmacy.name %></h3>
+          <p class="text-sm text-pts-600 mt-0.5"><%= entry.drug.name %> <%= entry.drug.dosage %></p>
+        </div>
+        <div class="flex flex-col items-end gap-1 shrink-0">
+          <%= drug_type_badge(entry.drug.drug_type) %>
+          <% if entry.promotion.present? %>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
+              Promoción vigente
+            </span>
+          <% end %>
+        </div>
+      </div>
+
+      <%# Precios %>
+      <div class="mt-3 flex items-end gap-4 flex-wrap">
+        <div>
+          <p class="text-xs text-pts-600 mb-0.5">Precio por pieza</p>
+          <p class="text-2xl font-semibold <%= is_best ? 'text-pts-500' : 'text-pts-800' %>">
+            $<%= number_with_precision(entry.price_per_unit, precision: 2) %>
+          </p>
+        </div>
+        <div>
+          <p class="text-xs text-pts-600 mb-0.5">Precio por caja (<%= entry.units_per_box %> pzas.)</p>
+          <p class="text-base font-medium text-pts-700">
+            $<%= number_with_precision(entry.price_per_box, precision: 2) %>
+          </p>
+        </div>
+      </div>
+
+      <%# Promoción %>
+      <% if entry.promotion.present? %>
+        <div class="mt-2 px-3 py-2 bg-green-50 rounded-lg">
+          <p class="text-sm text-green-700 font-medium"><%= entry.promotion %></p>
+          <% if entry.promotion_expiry.present? %>
+            <p class="text-xs text-green-600 mt-0.5">Vigente hasta <%= l(entry.promotion_expiry, format: :long) %></p>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%# Disponibilidad %>
+      <div class="mt-3 flex flex-wrap gap-1.5">
+        <%= availability_badge(in_stock: entry.in_stock, home_delivery: entry.home_delivery) %>
+      </div>
+
+    </div>
+  </div>
+</article>

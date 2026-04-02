@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <title>portusalud — Compara precios de medicamentos en México</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-white text-pts-900 font-sans antialiased min-h-screen">
+
+    <%# Barra de navegación %>
+    <header class="border-b border-pts-200 bg-white">
+      <nav class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+        <%= link_to root_path, class: "flex items-center gap-2 no-underline" do %>
+          <span class="text-pts-800 font-semibold text-lg leading-none">portusalud</span>
+          <span class="text-pts-400 text-sm font-normal">.org</span>
+        <% end %>
+
+        <div class="flex items-center gap-4 text-sm">
+          <% if user_signed_in? %>
+            <%= link_to "Mis medicinas", mis_medicinas_path, class: "text-pts-700 font-medium hover:text-pts-500" %>
+            <%= link_to "Salir", destroy_user_session_path, data: { turbo_method: :delete }, class: "text-pts-600 hover:text-pts-500" %>
+          <% else %>
+            <%= link_to "Iniciar sesión", new_user_session_path, class: "text-pts-700 font-medium hover:text-pts-500" %>
+            <%= link_to "Registrarse", new_user_registration_path, class: "bg-pts-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-pts-600 transition-colors" %>
+          <% end %>
+        </div>
+      </nav>
+    </header>
+
+    <%# Flash messages %>
+    <% if notice.present? %>
+      <div class="bg-pts-50 border-l-4 border-pts-500 text-pts-800 px-4 py-3 text-sm" role="alert">
+        <%= notice %>
+      </div>
+    <% end %>
+    <% if alert.present? %>
+      <div class="bg-red-50 border-l-4 border-red-400 text-red-800 px-4 py-3 text-sm" role="alert">
+        <%= alert %>
+      </div>
+    <% end %>
+
+    <main>
+      <%= yield %>
+    </main>
+
+    <%# Disclaimer legal — visible en todas las pantallas con resultados de precios %>
+    <footer class="mt-16 border-t border-pts-100 bg-pts-50">
+      <div class="max-w-5xl mx-auto px-4 py-6">
+        <p class="text-xs text-pts-700 leading-relaxed">
+          Los precios mostrados son referenciales y pueden variar. portusalud no vende ni intermedia en la compra de medicamentos.
+          Consulta siempre a tu médico antes de cambiar o suspender cualquier tratamiento.
+        </p>
+      </div>
+    </footer>
+
+  </body>
+</html>

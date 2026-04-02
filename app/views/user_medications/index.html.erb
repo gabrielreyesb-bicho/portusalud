@@ -1,0 +1,97 @@
+<%# Mis medicinas — /mis-medicinas (requiere sesión) %>
+
+<div class="max-w-3xl mx-auto px-4 py-8">
+
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-2xl font-semibold text-pts-800">Mis medicinas</h1>
+      <p class="text-sm text-pts-600 mt-1">Medicamentos que tomas regularmente</p>
+    </div>
+    <%= link_to root_path,
+        class: "text-sm text-pts-500 font-medium hover:text-pts-600 transition-colors" do %>
+      + Agregar medicamento
+    <% end %>
+  </div>
+
+  <% if @user_medications.empty? %>
+    <%# Estado vacío %>
+    <div class="text-center py-16 border border-dashed border-pts-200 rounded-xl">
+      <p class="text-base font-medium text-pts-700 mb-2">Todavía no tienes medicamentos guardados</p>
+      <p class="text-sm text-pts-600 mb-6">
+        Busca un medicamento y usa el botón "Guardar en Mis medicinas" para agregarlo aquí.
+      </p>
+      <%= link_to "Buscar medicamentos", root_path,
+          class: "inline-flex items-center px-5 py-2.5 bg-pts-500 text-white font-medium
+                  rounded-xl hover:bg-pts-600 transition-colors text-sm" %>
+    </div>
+
+  <% else %>
+
+    <%# Tarjeta de gasto mensual total %>
+    <div class="mb-6 p-5 bg-pts-500 text-white rounded-xl">
+      <p class="text-sm text-pts-100 mb-1">Gasto mensual estimado total</p>
+      <p class="text-3xl font-semibold">
+        $<%= number_with_precision(@total_monthly, precision: 2, delimiter: ",") %>
+        <span class="text-lg font-normal text-pts-100">/mes</span>
+      </p>
+      <p class="text-xs text-pts-100 mt-2">
+        Estimado con el mejor precio disponible por cada medicamento · 30 piezas/mes
+      </p>
+    </div>
+
+    <%# Lista de medicamentos %>
+    <div class="flex flex-col gap-3">
+      <% @monthly_costs.each do |mc| %>
+        <article class="border border-pts-200 rounded-xl p-5 bg-white flex items-start justify-between gap-4">
+          <div class="min-w-0 flex-1">
+            <div class="flex items-start gap-3">
+              <div>
+                <h2 class="text-base font-semibold text-pts-800">
+                  <%= link_to comparar_path(mc[:drug].slug),
+                      class: "hover:text-pts-500 transition-colors" do %>
+                    <%= mc[:drug].active_ingredient.capitalize %>
+                    <span class="font-normal text-pts-600"><%= mc[:drug].dosage %></span>
+                  <% end %>
+                </h2>
+                <p class="text-sm text-pts-600 mt-0.5">
+                  <%= mc[:drug].name %> · <%= mc[:drug].form %>
+                </p>
+              </div>
+            </div>
+
+            <% if mc[:price_entry] %>
+              <div class="mt-3 flex flex-wrap gap-4 text-sm">
+                <div>
+                  <span class="text-pts-600">Mejor precio:</span>
+                  <span class="font-medium text-pts-800">
+                    $<%= number_with_precision(mc[:price_entry].price_per_unit, precision: 2) %>/pieza
+                  </span>
+                  <span class="text-pts-500">en <%= mc[:price_entry].pharmacy.name %></span>
+                </div>
+                <div>
+                  <span class="text-pts-600">Este mes:</span>
+                  <span class="font-semibold text-pts-700">
+                    $<%= number_with_precision(mc[:monthly_cost], precision: 2) %>
+                  </span>
+                </div>
+              </div>
+            <% else %>
+              <p class="mt-2 text-sm text-pts-400">Sin precios disponibles</p>
+            <% end %>
+          </div>
+
+          <%# Botón quitar %>
+          <%= button_to quitar_medicamento_path(drug_id: mc[:drug].id),
+              method: :delete,
+              data: { turbo_confirm: "¿Quitar #{mc[:drug].name} de Mis medicinas?" },
+              class: "shrink-0 p-2 text-pts-300 hover:text-red-500 transition-colors
+                      rounded-lg hover:bg-red-50 cursor-pointer" do %>
+            <span class="text-lg leading-none">✕</span>
+          <% end %>
+        </article>
+      <% end %>
+    </div>
+
+  <% end %>
+
+</div>

@@ -1,0 +1,9 @@
+<%= turbo_stream.update "autocomplete_suggestions" do %>
+  <% if @suggestions.any? %>
+    <div class="py-1">
+      <%= render partial: "autocomplete_suggestion",
+                 collection: @suggestions,
+                 as: :drug %>
+    </div>
+  <% end %>
+<% end %>

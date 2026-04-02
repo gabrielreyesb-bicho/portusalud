@@ -1,0 +1,134 @@
+<%# Vista de tabla del comparativo — scroll horizontal en mobile.
+    Variables: generic_entries, innovador_entries, best_price_entry, best_innovador_entry %>
+
+<div class="overflow-x-auto rounded-xl border border-pts-200">
+  <table class="min-w-full divide-y divide-pts-100 text-sm">
+
+    <thead class="bg-pts-50">
+      <tr>
+        <th class="px-4 py-3 text-left text-xs font-medium text-pts-600 uppercase tracking-wide whitespace-nowrap">Farmacia</th>
+        <th class="px-4 py-3 text-left text-xs font-medium text-pts-600 uppercase tracking-wide whitespace-nowrap">Tipo</th>
+        <th class="px-4 py-3 text-left text-xs font-medium text-pts-600 uppercase tracking-wide whitespace-nowrap">Nombre comercial</th>
+        <th class="px-4 py-3 text-right text-xs font-medium text-pts-600 uppercase tracking-wide whitespace-nowrap">Precio / pieza</th>
+        <th class="px-4 py-3 text-right text-xs font-medium text-pts-600 uppercase tracking-wide whitespace-nowrap">Precio / caja</th>
+        <th class="px-4 py-3 text-right text-xs font-medium text-pts-600 uppercase tracking-wide whitespace-nowrap">Piezas</th>
+        <th class="px-4 py-3 text-left text-xs font-medium text-pts-600 uppercase tracking-wide whitespace-nowrap">Disponibilidad</th>
+        <th class="px-4 py-3 text-left text-xs font-medium text-pts-600 uppercase tracking-wide whitespace-nowrap">Promoción</th>
+      </tr>
+    </thead>
+
+    <tbody class="bg-white divide-y divide-pts-100">
+
+      <%# ── Sección genéricos ── %>
+      <% if generic_entries.any? %>
+        <tr class="bg-pts-50">
+          <td colspan="8" class="px-4 py-2 text-xs font-medium text-pts-600 uppercase tracking-wide">
+            Genéricos intercambiables
+          </td>
+        </tr>
+        <% generic_entries.each do |entry| %>
+          <% is_best = entry == best_price_entry %>
+          <tr class="<%= is_best ? 'bg-pts-50 border-l-4 border-pts-500' : 'hover:bg-gray-50' %> transition-colors"
+              data-drug-type="<%= entry.drug.drug_type %>"
+              data-has-promotion="<%= entry.promotion.present? %>"
+              data-table-row>
+            <%# Farmacia %>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded bg-pts-50 border border-pts-100 flex items-center justify-center text-xs font-semibold text-pts-500 shrink-0">
+                  <%= entry.pharmacy.name.split.map(&:first).first(2).join %>
+                </div>
+                <span class="font-medium text-pts-800"><%= entry.pharmacy.name %></span>
+              </div>
+            </td>
+            <%# Tipo %>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <%= drug_type_badge(entry.drug.drug_type) %>
+            </td>
+            <%# Nombre comercial %>
+            <td class="px-4 py-3 text-pts-700 whitespace-nowrap"><%= entry.drug.name %> <%= entry.drug.dosage %></td>
+            <%# Precio pieza %>
+            <td class="px-4 py-3 text-right whitespace-nowrap">
+              <span class="<%= is_best ? 'font-semibold text-pts-500' : 'font-medium text-pts-800' %>">
+                $<%= number_with_precision(entry.price_per_unit, precision: 2) %>
+              </span>
+              <% if is_best %>
+                <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-pts-500 text-white">★</span>
+              <% end %>
+            </td>
+            <%# Precio caja %>
+            <td class="px-4 py-3 text-right text-pts-700 whitespace-nowrap">$<%= number_with_precision(entry.price_per_box, precision: 2) %></td>
+            <%# Piezas %>
+            <td class="px-4 py-3 text-right text-pts-600 whitespace-nowrap"><%= entry.units_per_box %></td>
+            <%# Disponibilidad %>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <%= availability_badge(in_stock: entry.in_stock, home_delivery: entry.home_delivery) %>
+            </td>
+            <%# Promoción %>
+            <td class="px-4 py-3 text-pts-600 max-w-xs">
+              <% if entry.promotion.present? %>
+                <span class="text-green-700 font-medium"><%= entry.promotion %></span>
+                <% if entry.promotion_expiry.present? %>
+                  <span class="block text-xs text-green-600">hasta <%= l(entry.promotion_expiry, format: :short) %></span>
+                <% end %>
+              <% else %>
+                <span class="text-pts-300">—</span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      <% end %>
+
+      <%# ── Sección medicamento de referencia ── %>
+      <% if innovador_entries.any? %>
+        <tr class="bg-blue-50">
+          <td colspan="8" class="px-4 py-2 text-xs font-medium text-blue-600 uppercase tracking-wide">
+            Medicamento de referencia
+          </td>
+        </tr>
+        <% innovador_entries.each do |entry| %>
+          <% is_best_inno = entry == best_innovador_entry %>
+          <tr class="<%= is_best_inno ? 'bg-blue-50 border-l-4 border-blue-400' : 'hover:bg-gray-50' %> transition-colors"
+              data-drug-type="<%= entry.drug.drug_type %>"
+              data-has-promotion="<%= entry.promotion.present? %>"
+              data-table-row>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded bg-blue-50 border border-blue-100 flex items-center justify-center text-xs font-semibold text-blue-500 shrink-0">
+                  <%= entry.pharmacy.name.split.map(&:first).first(2).join %>
+                </div>
+                <span class="font-medium text-pts-800"><%= entry.pharmacy.name %></span>
+              </div>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap"><%= drug_type_badge(entry.drug.drug_type) %></td>
+            <td class="px-4 py-3 text-pts-700 whitespace-nowrap"><%= entry.drug.name %> <%= entry.drug.dosage %></td>
+            <td class="px-4 py-3 text-right whitespace-nowrap">
+              <span class="<%= is_best_inno ? 'font-semibold text-blue-600' : 'font-medium text-pts-800' %>">
+                $<%= number_with_precision(entry.price_per_unit, precision: 2) %>
+              </span>
+              <% if is_best_inno %>
+                <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-blue-600 text-white">★</span>
+              <% end %>
+            </td>
+            <td class="px-4 py-3 text-right text-pts-700 whitespace-nowrap">$<%= number_with_precision(entry.price_per_box, precision: 2) %></td>
+            <td class="px-4 py-3 text-right text-pts-600 whitespace-nowrap"><%= entry.units_per_box %></td>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <%= availability_badge(in_stock: entry.in_stock, home_delivery: entry.home_delivery) %>
+            </td>
+            <td class="px-4 py-3 text-pts-600 max-w-xs">
+              <% if entry.promotion.present? %>
+                <span class="text-green-700 font-medium"><%= entry.promotion %></span>
+                <% if entry.promotion_expiry.present? %>
+                  <span class="block text-xs text-green-600">hasta <%= l(entry.promotion_expiry, format: :short) %></span>
+                <% end %>
+              <% else %>
+                <span class="text-pts-300">—</span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      <% end %>
+
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,41 @@
+<%# Página de resultados de búsqueda %>
+
+<div class="max-w-3xl mx-auto px-4 py-8">
+
+  <%# Buscador en la parte superior %>
+  <div class="mb-8">
+    <%= render "shared/search_bar", query: @query %>
+  </div>
+
+  <%# Resultados %>
+  <% if @query.length < 2 %>
+    <div class="text-center py-16 text-pts-600">
+      <p class="text-base">Escribe al menos 2 caracteres para buscar.</p>
+    </div>
+
+  <% elsif @drugs.none? %>
+    <div class="text-center py-16">
+      <p class="text-base text-pts-700 font-medium mb-2">
+        No encontramos resultados para "<%= @query %>"
+      </p>
+      <p class="text-sm text-pts-600">
+        Prueba con el nombre genérico o el principio activo del medicamento.
+      </p>
+    </div>
+
+  <% else %>
+    <div class="mb-4 flex items-center justify-between">
+      <p class="text-sm text-pts-600">
+        <span class="font-medium text-pts-800"><%= @drugs.size %></span>
+        <%= @drugs.size == 1 ? "resultado" : "resultados" %>
+        para "<span class="font-medium"><%= @query %></span>"
+      </p>
+    </div>
+
+    <div class="flex flex-col gap-3">
+      <%= render partial: "drug_card", collection: @drugs, as: :drug %>
+    </div>
+
+  <% end %>
+
+</div>
