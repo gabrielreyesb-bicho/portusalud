@@ -1,0 +1,25 @@
+wb = xlsx_package.workbook
+
+header = wb.styles.add_style(b: true, bg_color: "1A6B58", fg_color: "FFFFFF")
+
+wb.add_worksheet(name: "Precios") do |s|
+  s.add_row(["drug_slug", "pharmacy_name", "price_per_box", "units_per_box",
+             "promotion", "promotion_expiry", "in_stock", "home_delivery"], style: header)
+  s.column_widths 28, 28, 16, 16, 30, 18, 12, 14
+end
+
+wb.add_worksheet(name: "Medicamentos") do |s|
+  s.add_row(["name", "active_ingredient", "form", "dosage",
+             "requires_prescription", "therapeutic_group", "via", "drug_type", "slug"], style: header)
+  s.column_widths 28, 28, 14, 10, 22, 24, 10, 28, 28
+end
+
+wb.add_worksheet(name: "Farmacias") do |s|
+  s.add_row(["name", "kind"], style: header)
+  s.column_widths 35, 20
+end
+
+wb.add_worksheet(name: "Equivalencias") do |s|
+  s.add_row(["drug_slug", "reference_drug_slug", "cofepris_registration"], style: header)
+  s.column_widths 32, 32, 26
+end

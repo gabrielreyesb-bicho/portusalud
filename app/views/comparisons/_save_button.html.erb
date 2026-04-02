@@ -2,14 +2,7 @@
     Se actualiza via Turbo Stream sin recargar la página. %>
 
 <div id="save_drug_<%= drug.id %>">
-  <% if !user_signed_in? %>
-    <%= link_to new_user_session_path,
-        class: "inline-flex items-center gap-2 px-4 py-2 border border-pts-300 rounded-xl
-                text-sm font-medium text-pts-700 hover:bg-pts-50 transition-colors" do %>
-      <span>♡</span> Guardar en Mis medicinas
-    <% end %>
-
-  <% elsif saved %>
+  <% if saved %>
     <%= button_to quitar_medicamento_path(drug_id: drug.id),
         method: :delete,
         class: "inline-flex items-center gap-2 px-4 py-2 bg-pts-50 border border-pts-500

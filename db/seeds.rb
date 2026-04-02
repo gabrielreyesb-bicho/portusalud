@@ -89,17 +89,43 @@ puts "Creando fichas educativas..."
 DrugPage.create!(
   drug: metformina,
   slug: "metformina",
-  educational_content: "La metformina es un medicamento genérico intercambiable certificado por COFEPRIS. "\
-    "Tiene exactamente el mismo principio activo, la misma dosis y la misma forma farmacéutica que el medicamento innovador. "\
-    "Su uso es seguro y está ampliamente recomendado para el control de la diabetes tipo 2."
+  educational_content: <<~CONTENT
+    === ¿Qué es la metformina?
+    La metformina es el medicamento de primera línea para el tratamiento de la diabetes tipo 2. Pertenece a la familia de las biguanidas y actúa reduciendo la cantidad de glucosa que produce el hígado y mejorando la sensibilidad del organismo a la insulina. Se toma generalmente con los alimentos para reducir los efectos secundarios digestivos.
+
+    === ¿Qué es un genérico intercambiable?
+    Un genérico intercambiable es un medicamento que contiene exactamente el mismo principio activo, en la misma dosis y forma farmacéutica que el medicamento de referencia. COFEPRIS (Comisión Federal para la Protección contra Riesgos Sanitarios) certifica que produce el mismo efecto terapéutico en el organismo, mediante pruebas de bioequivalencia. Esto significa que puedes usarlo de forma segura como sustituto del medicamento de referencia.
+
+    === ¿Qué certifica COFEPRIS?
+    COFEPRIS verifica que el genérico intercambiable tenga la misma calidad, pureza, potencia y estabilidad que el medicamento de referencia. El proceso incluye estudios de biodisponibilidad que demuestran que el ingrediente activo llega al torrente sanguíneo en la misma cantidad y velocidad. Solo los medicamentos que pasan estas pruebas reciben la certificación de intercambiable.
+
+    === ¿Qué puedo esperar como paciente?
+    Al cambiar de un medicamento de referencia a metformina genérica intercambiable, puedes esperar el mismo efecto terapéutico. El empaque y la apariencia de la tableta pueden ser diferentes, pero el principio activo y su funcionamiento son equivalentes. Muchos pacientes con diabetes tipo 2 en México utilizan metformina genérica con los mismos resultados clínicos que el medicamento de referencia, a una fracción del costo.
+
+    === Antes de hacer cualquier cambio
+    Siempre consulta a tu médico o farmacéutico antes de cambiar de medicamento, incluso cuando se trata de un genérico intercambiable certificado. Esta información es de carácter educativo y no sustituye el consejo médico profesional.
+  CONTENT
 )
 
 DrugPage.create!(
   drug: atorvastatina,
   slug: "atorvastatina",
-  educational_content: "La atorvastatina es un medicamento genérico intercambiable certificado por COFEPRIS. "\
-    "Se utiliza para reducir los niveles de colesterol en sangre. "\
-    "Tiene la misma eficacia que el medicamento innovador a una fracción del costo."
+  educational_content: <<~CONTENT
+    === ¿Qué es la atorvastatina?
+    La atorvastatina es un medicamento de la familia de las estatinas, utilizado para reducir los niveles de colesterol LDL ("colesterol malo") y triglicéridos en la sangre, y para aumentar el colesterol HDL ("colesterol bueno"). Es uno de los medicamentos más prescritos en el mundo para la prevención de enfermedades cardiovasculares como infartos y derrames cerebrales.
+
+    === ¿Qué es un genérico intercambiable?
+    Un genérico intercambiable contiene exactamente el mismo principio activo en la misma dosis que el medicamento de referencia, y ha sido certificado por COFEPRIS mediante pruebas de bioequivalencia. Esto garantiza que produce el mismo efecto terapéutico en el organismo. La única diferencia puede estar en los excipientes (componentes inactivos) y en la presentación.
+
+    === ¿Qué certifica COFEPRIS?
+    COFEPRIS certifica que el genérico intercambiable cumple con los mismos estándares de calidad, seguridad y eficacia que el medicamento de referencia. Los estudios de bioequivalencia demuestran que el ingrediente activo —en este caso la atorvastatina— actúa de la misma manera en el organismo, con la misma velocidad y en la misma concentración.
+
+    === ¿Qué puedo esperar como paciente?
+    Al usar atorvastatina genérica intercambiable, puedes esperar el mismo efecto sobre tus niveles de colesterol. Los controles periódicos de laboratorio mostrarán resultados equivalentes a los del medicamento de referencia. El ahorro puede ser significativo, especialmente en tratamientos de largo plazo como los que requieren las enfermedades cardiovasculares crónicas.
+
+    === Antes de hacer cualquier cambio
+    Siempre consulta a tu médico o farmacéutico antes de cambiar de medicamento. Esta información es de carácter educativo y no sustituye el consejo médico profesional. No suspendas ni modifiques tu tratamiento sin indicación médica.
+  CONTENT
 )
 
 # ── Entradas de precio ─────────────────────────────────────────────────────────

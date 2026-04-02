@@ -36,16 +36,30 @@ class Drug < ApplicationRecord
 
   before_validation :generate_slug, if: -> { slug.blank? && name.present? && dosage.present? }
 
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[active_ingredient created_at dosage drug_type form id name
+       requires_prescription slug therapeutic_group updated_at via]
+  end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[drug_page generic_equivalents generic_equivalent_references
+       price_entries user_medications]
+  end
+
+  def self.generate_slug(name, dosage = nil)
+    base = dosage.present? ? "#{name}-#{dosage}" : name
+    base.downcase.strip
+        .gsub(/[áàä]/, "a").gsub(/[éèë]/, "e")
+        .gsub(/[íìï]/, "i").gsub(/[óòö]/, "o")
+        .gsub(/[úùü]/, "u").gsub("ñ", "n")
+        .gsub(/[^a-z0-9\s-]/, "")
+        .gsub(/\s+/, "-")
+        .gsub(/-+/, "-")
+  end
+
   private
 
   def generate_slug
-    base = "#{name}-#{dosage}".downcase.strip
-                              .gsub(/[áàä]/, "a").gsub(/[éèë]/, "e")
-                              .gsub(/[íìï]/, "i").gsub(/[óòö]/, "o")
-                              .gsub(/[úùü]/, "u").gsub("ñ", "n")
-                              .gsub(/[^a-z0-9\s-]/, "")
-                              .gsub(/\s+/, "-")
-                              .gsub(/-+/, "-")
-    self.slug = base
+    self.slug = self.class.generate_slug(name, dosage)
   end
 end

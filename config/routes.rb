@@ -23,6 +23,13 @@ Rails.application.routes.draw do
   post "/mis-medicinas/guardar/:drug_id",    to: "user_medications#create",  as: :guardar_medicamento
   delete "/mis-medicinas/quitar/:drug_id",   to: "user_medications#destroy", as: :quitar_medicamento
 
+  # Importador de Excel (acceso solo admin, bajo /admin/importar)
+  namespace :admin do
+    get  "importar",          to: "imports#new",      as: :import
+    post "importar",          to: "imports#create",   as: :run_import
+    get  "importar/plantilla", to: "imports#template", as: :import_template
+  end
+
   get "up" => "rails/health#show", as: :rails_health_check
 
   root "home#index"

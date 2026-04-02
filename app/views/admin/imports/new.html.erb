@@ -1,0 +1,262 @@
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+  <%# Breadcrumb %>
+  <nav class="text-sm text-gray-500 mb-6">
+    <%= link_to "← Volver al panel", admin_dashboard_path, class: "text-pts-600 hover:text-pts-500" %>
+  </nav>
+
+  <div class="flex items-center justify-between mb-1">
+    <h1 class="text-2xl font-bold text-gray-900">Importar datos desde Excel</h1>
+    <%= link_to admin_import_template_path(format: :xlsx),
+          class: "inline-flex items-center gap-2 bg-green-700 hover:bg-green-800 text-white
+                  text-sm font-semibold px-4 py-2 rounded-lg transition-colors" do %>
+      ⬇ Descargar plantilla .xlsx
+    <% end %>
+  </div>
+  <p class="text-gray-500 mb-2">
+    Sube un archivo <strong>.xlsx</strong>. Puede contener entre 1 y 4 sheets opcionales:
+    <code class="bg-gray-100 px-1 rounded">Medicamentos</code>,
+    <code class="bg-gray-100 px-1 rounded">Farmacias</code>,
+    <code class="bg-gray-100 px-1 rounded">Precios</code> y/o
+    <code class="bg-gray-100 px-1 rounded">Equivalencias</code>.
+    Las sheets que no existan se omiten silenciosamente.
+  </p>
+  <div class="bg-pts-50 border border-pts-200 rounded-lg px-4 py-3 mb-6 text-sm text-pts-800">
+    <strong>⚠️ El nombre de la hoja es importante.</strong>
+    El importador identifica qué datos contiene el archivo por el nombre de la hoja (pestaña).
+    Usa exactamente estos nombres (mayúsculas/minúsculas no importan):<br><br>
+    <span class="inline-block bg-white border border-pts-200 rounded px-2 py-0.5 mr-1 font-mono">Medicamentos</span>
+    <span class="inline-block bg-white border border-pts-200 rounded px-2 py-0.5 mr-1 font-mono">Farmacias</span>
+    <span class="inline-block bg-white border border-pts-200 rounded px-2 py-0.5 mr-1 font-mono">Precios</span>
+    <span class="inline-block bg-white border border-pts-200 rounded px-2 py-0.5 font-mono">Equivalencias</span>
+    <br><br>
+    <strong>Caso más común — solo precios:</strong>
+    renombra la hoja a <code class="bg-white px-1 rounded">Precios</code> y usa las columnas:
+    <code class="bg-white px-1 rounded">drug_slug</code> ·
+    <code class="bg-white px-1 rounded">pharmacy_name</code> ·
+    <code class="bg-white px-1 rounded">price_per_box</code> ·
+    <code class="bg-white px-1 rounded">units_per_box</code>.
+    El resto de columnas son opcionales.
+  </div>
+
+  <%# Flash %>
+  <% if flash[:notice] %>
+    <div class="bg-green-50 border border-green-200 text-green-800 rounded-lg px-4 py-3 mb-6">
+      ✅ <%= flash[:notice] %>
+    </div>
+  <% end %>
+  <% if flash[:alert] %>
+    <div class="bg-red-50 border border-red-200 text-red-800 rounded-lg px-4 py-3 mb-6">
+      ⚠️ <%= flash[:alert] %>
+    </div>
+  <% end %>
+
+  <%# Formulario de upload %>
+  <%= form_tag admin_run_import_path, multipart: true,
+        data: { turbo: false },
+        class: "bg-white border border-gray-200 rounded-xl p-6 mb-8" do %>
+    <div class="mb-4">
+      <%= label_tag :excel_file, "Archivo Excel (.xlsx)", class: "block text-sm font-semibold text-gray-700 mb-1" %>
+      <%= file_field_tag :excel_file,
+            accept: ".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            class: "block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-pts-50 file:text-pts-700 hover:file:bg-pts-100" %>
+    </div>
+    <%= submit_tag "Importar", class: "bg-pts-500 hover:bg-pts-600 text-white font-semibold py-2 px-6 rounded-lg cursor-pointer transition-colors" %>
+  <% end %>
+
+  <%# Resultado %>
+  <% if @result %>
+    <div class="bg-white border border-gray-200 rounded-xl p-6 mb-8">
+      <h2 class="text-lg font-bold text-gray-900 mb-4">Resultado de la importación</h2>
+
+      <table class="w-full text-sm mb-6">
+        <thead>
+          <tr class="bg-gray-50">
+            <th class="text-left px-3 py-2 border border-gray-200 font-semibold">Entidad</th>
+            <th class="text-left px-3 py-2 border border-gray-200 font-semibold">Registros procesados</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% [[:drugs, "Medicamentos"], [:pharmacies, "Farmacias"], [:prices, "Precios"], [:equivalents, "Equivalencias"]].each do |key, label| %>
+            <tr>
+              <td class="px-3 py-2 border border-gray-200"><%= label %></td>
+              <td class="px-3 py-2 border border-gray-200 font-mono"><%= @result.imported[key] %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+
+      <%# Aviso si no se encontró ninguna sheet reconocida %>
+      <% if @result.imported.values.sum == 0 && @result.errors.empty? %>
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-3 mb-4 text-sm">
+          <strong class="text-yellow-800">⚠️ No se encontraron sheets con nombres reconocidos.</strong><br>
+          <span class="text-yellow-700">
+            Sheets encontradas en el archivo:
+            <strong><%= @result.found_sheets.join(", ") %></strong>
+          </span><br>
+          <span class="text-yellow-700">
+            Nombres esperados (sin importar mayúsculas):
+            <strong>Medicamentos · Farmacias · Precios · Equivalencias</strong>
+          </span>
+        </div>
+      <% end %>
+
+      <% if @result.errors.any? %>
+        <h3 class="text-base font-bold text-red-700 mb-3">Errores (<%= @result.errors.size %>)</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="bg-yellow-50">
+                <th class="text-left px-3 py-2 border border-gray-200 font-semibold">Sheet</th>
+                <th class="text-left px-3 py-2 border border-gray-200 font-semibold">Fila</th>
+                <th class="text-left px-3 py-2 border border-gray-200 font-semibold">Campo</th>
+                <th class="text-left px-3 py-2 border border-gray-200 font-semibold">Mensaje</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @result.errors.each do |err| %>
+                <tr class="hover:bg-red-50">
+                  <td class="px-3 py-2 border border-gray-200"><%= err[:sheet] %></td>
+                  <td class="px-3 py-2 border border-gray-200 font-mono"><%= err[:row] || "—" %></td>
+                  <td class="px-3 py-2 border border-gray-200 font-mono"><%= err[:field] || "—" %></td>
+                  <td class="px-3 py-2 border border-gray-200 text-red-700"><%= err[:message] %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <p class="text-green-700 font-semibold">✅ Sin errores — todos los registros fueron importados correctamente.</p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%# Guía de formato %>
+  <div class="bg-white border border-gray-200 rounded-xl p-6">
+    <h2 class="text-lg font-bold text-gray-900 mb-4">Formato esperado por sheet</h2>
+
+    <%# Medicamentos %>
+    <details class="mb-4 border border-gray-100 rounded-lg">
+      <summary class="cursor-pointer font-semibold px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg select-none">
+        📋 Medicamentos
+      </summary>
+      <div class="overflow-x-auto px-4 py-3">
+        <table class="w-full text-sm">
+          <thead><tr class="bg-gray-50">
+            <th class="text-left px-3 py-2 border border-gray-200 font-semibold">Columna</th>
+            <th class="text-left px-3 py-2 border border-gray-200 font-semibold">Requerido</th>
+            <th class="text-left px-3 py-2 border border-gray-200 font-semibold">Notas</th>
+          </tr></thead>
+          <tbody>
+            <% [
+              ["name",                  "Sí",  "Nombre comercial"],
+              ["active_ingredient",     "Sí",  "Principio activo"],
+              ["form",                  "No",  "Ej: tableta, cápsula"],
+              ["dosage",                "No",  "Ej: 850mg"],
+              ["requires_prescription", "No",  "1/si/yes = true, default false"],
+              ["therapeutic_group",     "No",  "Ej: Antidiabéticos"],
+              ["via",                   "No",  "Ej: oral"],
+              ["drug_type",             "No",  "generico_intercambiable | branded_generic | referencia"],
+              ["slug",                  "No",  "Se genera automáticamente si se omite"]
+            ].each do |col, req, nota| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-3 py-2 border border-gray-200 font-mono text-xs"><%= col %></td>
+                <td class="px-3 py-2 border border-gray-200"><%= req %></td>
+                <td class="px-3 py-2 border border-gray-200 text-gray-600"><%= nota %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <%# Farmacias %>
+    <details class="mb-4 border border-gray-100 rounded-lg">
+      <summary class="cursor-pointer font-semibold px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg select-none">
+        🏪 Farmacias
+      </summary>
+      <div class="overflow-x-auto px-4 py-3">
+        <table class="w-full text-sm">
+          <thead><tr class="bg-gray-50">
+            <th class="text-left px-3 py-2 border border-gray-200 font-semibold">Columna</th>
+            <th class="text-left px-3 py-2 border border-gray-200 font-semibold">Requerido</th>
+            <th class="text-left px-3 py-2 border border-gray-200 font-semibold">Notas</th>
+          </tr></thead>
+          <tbody>
+            <% [["name", "Sí", "Nombre de la farmacia"], ["kind", "Sí", "cadena | autoservicio"]].each do |col, req, nota| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-3 py-2 border border-gray-200 font-mono text-xs"><%= col %></td>
+                <td class="px-3 py-2 border border-gray-200"><%= req %></td>
+                <td class="px-3 py-2 border border-gray-200 text-gray-600"><%= nota %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <%# Precios %>
+    <details class="mb-4 border border-gray-100 rounded-lg">
+      <summary class="cursor-pointer font-semibold px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg select-none">
+        💰 Precios
+      </summary>
+      <div class="overflow-x-auto px-4 py-3">
+        <table class="w-full text-sm">
+          <thead><tr class="bg-gray-50">
+            <th class="text-left px-3 py-2 border border-gray-200 font-semibold">Columna</th>
+            <th class="text-left px-3 py-2 border border-gray-200 font-semibold">Requerido</th>
+            <th class="text-left px-3 py-2 border border-gray-200 font-semibold">Notas</th>
+          </tr></thead>
+          <tbody>
+            <% [
+              ["drug_slug",        "Sí",  "Debe coincidir con un slug existente en Medicamentos"],
+              ["pharmacy_name",    "Sí",  "Debe coincidir con un nombre exacto en Farmacias"],
+              ["price_per_box",    "Sí",  "Precio de la caja (ej: 189.50)"],
+              ["units_per_box",    "Sí",  "Número de piezas por caja"],
+              ["promotion",        "No",  "Texto libre de la promoción activa"],
+              ["promotion_expiry", "No",  "Fecha de vigencia YYYY-MM-DD"],
+              ["in_stock",         "No",  "1/si/yes = en stock, default true"],
+              ["home_delivery",    "No",  "1/si/yes = envío a domicilio, default false"]
+            ].each do |col, req, nota| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-3 py-2 border border-gray-200 font-mono text-xs"><%= col %></td>
+                <td class="px-3 py-2 border border-gray-200"><%= req %></td>
+                <td class="px-3 py-2 border border-gray-200 text-gray-600"><%= nota %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <%# Equivalencias %>
+    <details class="mb-4 border border-gray-100 rounded-lg">
+      <summary class="cursor-pointer font-semibold px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg select-none">
+        🔗 Equivalencias
+      </summary>
+      <div class="overflow-x-auto px-4 py-3">
+        <table class="w-full text-sm">
+          <thead><tr class="bg-gray-50">
+            <th class="text-left px-3 py-2 border border-gray-200 font-semibold">Columna</th>
+            <th class="text-left px-3 py-2 border border-gray-200 font-semibold">Requerido</th>
+            <th class="text-left px-3 py-2 border border-gray-200 font-semibold">Notas</th>
+          </tr></thead>
+          <tbody>
+            <% [
+              ["drug_slug",             "Sí", "Slug del medicamento genérico"],
+              ["reference_drug_slug",   "Sí", "Slug del medicamento de referencia"],
+              ["cofepris_registration", "No", "Número de registro COFEPRIS"]
+            ].each do |col, req, nota| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-3 py-2 border border-gray-200 font-mono text-xs"><%= col %></td>
+                <td class="px-3 py-2 border border-gray-200"><%= req %></td>
+                <td class="px-3 py-2 border border-gray-200 text-gray-600"><%= nota %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+  </div>
+</div>

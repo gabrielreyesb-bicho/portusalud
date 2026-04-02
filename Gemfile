@@ -32,6 +32,9 @@ gem "pagy"
 # Importación de Excel
 gem "roo", "~> 2.10"
 
+# Generación de Excel (.xlsx) para plantillas descargables
+gem "caxlsx_rails"
+
 # Panel de administración interno
 gem "activeadmin"
 gem "sassc", "~> 2.1"

@@ -1,5 +1,17 @@
 class UserMedicationsController < ApplicationController
+  # Guarda el comparativo como destino de retorno ANTES de que authenticate_user!
+  # redirija al login. Así, tras el registro o inicio de sesión, el usuario
+  # vuelve a la página de donde vino (no a mis-medicinas).
+  before_action :store_comparativo_location, only: %i[create], if: -> { !user_signed_in? }
   before_action :authenticate_user!
+
+  private
+
+  def store_comparativo_location
+    store_location_for(:user, request.referer.presence || root_path)
+  end
+
+  public
 
   def index
     @user_medications = current_user.user_medications

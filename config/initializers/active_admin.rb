@@ -127,7 +127,7 @@ ActiveAdmin.setup do |config|
   # link. For example :get, :delete, :put, etc..
   #
   # Default:
-  # config.logout_link_method = :get
+  config.logout_link_method = :delete
 
   # == Root
   #
@@ -262,6 +262,14 @@ ActiveAdmin.setup do |config|
   #       menu.add label: "My Great Website", url: "http://www.mygreatwebsite.com", html_options: { target: "_blank" }
   #     end
   #   end
+
+  config.namespace :admin do |admin|
+    admin.build_menu :default do |menu|
+      menu.add label: "Importar Excel",
+               url: -> { Rails.application.routes.url_helpers.admin_import_path },
+               priority: 8
+    end
+  end
 
   # == Download Links
   #

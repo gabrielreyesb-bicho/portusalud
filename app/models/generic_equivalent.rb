@@ -6,4 +6,12 @@ class GenericEquivalent < ApplicationRecord
 
   validates :drug_id, uniqueness: { scope: :reference_drug_id }
   validates :reference_drug_id, presence: true
+
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[cofepris_registration created_at drug_id id reference_drug_id updated_at]
+  end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[drug reference_drug]
+  end
 end

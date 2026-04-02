@@ -61,3 +61,70 @@ es:
         separator: "."
         delimiter: ","
         format: "%u%n"
+
+  errors:
+    messages:
+      blank: "no puede estar en blanco"
+      empty: "no puede estar vacío"
+      invalid: "no es válido"
+      taken: "ya está en uso"
+      too_short: "es demasiado corto (mínimo %{count} caracteres)"
+      too_long: "es demasiado largo (máximo %{count} caracteres)"
+      not_a_number: "no es un número"
+      greater_than: "debe ser mayor que %{count}"
+      greater_than_or_equal_to: "debe ser mayor o igual que %{count}"
+      inclusion: "no está incluido en la lista"
+
+  activerecord:
+    errors:
+      messages:
+        blank: "no puede estar en blanco"
+        taken: "ya está en uso"
+        invalid: "no es válido"
+        not_a_number: "no es un número"
+        greater_than: "debe ser mayor que %{count}"
+        inclusion: "no está incluido en la lista"
+    models:
+      drug:
+        one: "Medicamento"
+        other: "Medicamentos"
+        attributes:
+          name:
+            blank: "no puede estar en blanco"
+          active_ingredient:
+            blank: "no puede estar en blanco"
+          slug:
+            blank: "no puede estar en blanco"
+            taken: "ya está en uso"
+          drug_type:
+            inclusion: "debe ser generico_intercambiable, branded_generic o referencia"
+      pharmacy:
+        one: "Farmacia"
+        other: "Farmacias"
+        attributes:
+          name:
+            blank: "no puede estar en blanco"
+          kind:
+            inclusion: "debe ser 'cadena' o 'autoservicio'"
+      price_entry:
+        one: "Precio"
+        other: "Precios"
+        attributes:
+          price_per_box:
+            blank: "no puede estar en blanco"
+            greater_than: "debe ser mayor que 0"
+          units_per_box:
+            blank: "no puede estar en blanco"
+            greater_than: "debe ser mayor que 0"
+      generic_equivalent:
+        one: "Equivalencia"
+        other: "Equivalencias"
+      drug_page:
+        one: "Ficha educativa"
+        other: "Fichas educativas"
+      user:
+        one: "Usuario"
+        other: "Usuarios"
+      active_admin/comment:
+        one: "Comentario"
+        other: "Comentarios"

@@ -1,4 +1,14 @@
 module BadgesHelper
+  # Parsea el contenido educativo estructurado con === como separador de sección.
+  # Devuelve un array de { title:, body: }
+  def parse_educational_content(text)
+    return [] if text.blank?
+
+    text.split(/^===\s*/).reject(&:blank?).map do |chunk|
+      lines = chunk.strip.split("\n", 2)
+      { title: lines[0]&.strip, body: lines[1]&.strip }
+    end
+  end
   # Devuelve el HTML del badge de tipo de medicamento según el sistema de diseño (§6.3)
   def drug_type_badge(drug_type)
     config = case drug_type

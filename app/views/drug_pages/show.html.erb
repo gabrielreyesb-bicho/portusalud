@@ -1,0 +1,89 @@
+<%# Ficha educativa por medicamento — /medicamento/:slug %>
+
+<div class="max-w-2xl mx-auto px-4 py-8">
+
+  <%# Enlace de regreso al comparativo %>
+  <div class="mb-6">
+    <%= link_to comparar_path(@drug.slug),
+        class: "text-sm text-pts-600 hover:text-pts-500 transition-colors" do %>
+      ← Volver al comparativo de <%= @drug.active_ingredient.capitalize %>
+    <% end %>
+  </div>
+
+  <%# ── Encabezado ── %>
+  <header class="mb-8 pb-6 border-b border-pts-200">
+    <div class="flex items-start justify-between gap-4 flex-wrap">
+      <div>
+        <p class="text-xs font-medium text-pts-500 uppercase tracking-wide mb-1">Ficha educativa</p>
+        <h1 class="text-2xl font-semibold text-pts-800 leading-snug">
+          <%= @drug.active_ingredient.capitalize %>
+          <span class="text-pts-600 font-normal"><%= @drug.dosage %></span>
+        </h1>
+        <p class="text-sm text-pts-600 mt-1">
+          <%= [@drug.form, @drug.via].compact.map(&:capitalize).join(" · ") %>
+          <% if @drug.therapeutic_group.present? %>
+            <span class="text-pts-300 mx-1">·</span><%= @drug.therapeutic_group %>
+          <% end %>
+        </p>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        <%= drug_type_badge(@drug.drug_type) %>
+        <% if @drug.requires_prescription? %>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700">
+            Requiere receta
+          </span>
+        <% end %>
+      </div>
+    </div>
+  </header>
+
+  <%# ── CTA: Ver comparativo de precios ── %>
+  <% if @best_price_entry %>
+    <div class="mb-8 p-4 bg-pts-50 border border-pts-200 rounded-xl flex items-center justify-between gap-4 flex-wrap">
+      <div>
+        <p class="text-sm text-pts-600">Mejor precio disponible</p>
+        <p class="text-lg font-semibold text-pts-800">
+          $<%= number_with_precision(@best_price_entry.price_per_unit, precision: 2) %>
+          <span class="text-sm font-normal text-pts-600">por pieza en <%= @best_price_entry.pharmacy.name %></span>
+        </p>
+      </div>
+      <%= link_to comparar_path(@drug.slug),
+          class: "shrink-0 px-4 py-2 bg-pts-500 text-white text-sm font-medium rounded-xl
+                  hover:bg-pts-600 transition-colors" do %>
+        Ver comparativo →
+      <% end %>
+    </div>
+  <% end %>
+
+  <%# ── Contenido educativo estructurado ── %>
+  <% if @drug_page.educational_content.present? %>
+    <div class="space-y-8">
+      <% parse_educational_content(@drug_page.educational_content).each do |section| %>
+        <section>
+          <h2 class="text-base font-semibold text-pts-800 mb-3 pb-2 border-b border-pts-100">
+            <%= section[:title] %>
+          </h2>
+          <div class="text-base text-pts-700 leading-relaxed">
+            <%= simple_format(section[:body], class: "text-base text-pts-700 leading-relaxed") %>
+          </div>
+        </section>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%# ── Disclaimer legal ── %>
+  <div class="mt-10 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+    <p class="text-sm font-medium text-amber-800 mb-1">Aviso importante</p>
+    <p class="text-sm text-amber-700 leading-relaxed">
+      Esta ficha es de carácter educativo únicamente. No constituye consejo médico ni recomendación de tratamiento.
+      Siempre consulta a tu médico o farmacéutico antes de cambiar, iniciar o suspender cualquier medicamento.
+    </p>
+  </div>
+
+  <%# ── Enlace a Mis medicinas ── %>
+  <div class="mt-8 pt-6 border-t border-pts-100 text-center">
+    <% saved = user_signed_in? && current_user.user_medications.exists?(drug: @drug) %>
+    <%= render "comparisons/save_button", drug: @drug, saved: saved %>
+  </div>
+
+</div>
