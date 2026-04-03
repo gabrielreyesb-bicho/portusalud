@@ -26,3 +26,10 @@
   </div>
 
 </section>
+
+<% if @sample_drug %>
+  <section class="max-w-2xl mx-auto px-4 pb-16">
+    <p class="text-xs text-pts-400 text-center mb-3 uppercase tracking-wide">Ejemplo de lo que verás</p>
+    <%= render "search/drug_card", drug: @sample_drug %>
+  </section>
+<% end %>

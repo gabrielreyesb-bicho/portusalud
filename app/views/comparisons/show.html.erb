@@ -10,97 +10,106 @@
 
   <%# ── Encabezado del medicamento ── %>
   <header class="mb-6 pb-6 border-b border-pts-200">
-    <div class="flex items-start justify-between gap-4 flex-wrap">
-      <div>
-        <h1 class="text-2xl font-semibold text-pts-800 leading-snug">
-          <%= @drug.active_ingredient.capitalize %>
-          <span class="text-pts-600 font-normal"><%= @drug.dosage %></span>
-        </h1>
-        <p class="text-sm text-pts-600 mt-1">
-          <%= [@drug.form, @drug.via].compact.map(&:capitalize).join(" · ") %>
-          <% if @drug.therapeutic_group.present? %>
-            <span class="text-pts-300 mx-1">·</span><%= @drug.therapeutic_group %>
-          <% end %>
-        </p>
-        <%# Enlace a ficha educativa si existe %>
-        <% if @drug.drug_page.present? %>
-          <%= link_to medicamento_path(@drug.drug_page.slug),
-              class: "inline-flex items-center gap-1 text-sm text-pts-500 hover:text-pts-600
-                      transition-colors mt-2" do %>
-            <span>ℹ</span> Ver ficha educativa
-          <% end %>
+
+    <%# Título %>
+    <h1 class="text-2xl font-semibold text-pts-800 leading-snug">
+      <%= @drug.active_ingredient.capitalize %>
+      <span class="text-pts-600 font-normal"><%= @drug.dosage %></span>
+    </h1>
+
+    <%# Metadatos %>
+    <p class="text-sm text-pts-600 mt-1">
+      <%= [@drug.form, @drug.via].compact.map(&:capitalize).join(" · ") %>
+      <% if @drug.therapeutic_group.present? %>
+        <span class="text-pts-300 mx-1">·</span><%= @drug.therapeutic_group %>
+      <% end %>
+    </p>
+
+    <%# Badges %>
+    <div class="flex flex-wrap items-center gap-2 mt-3">
+      <% if @drug.requires_prescription? %>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700">
+          Requiere receta
+        </span>
+      <% end %>
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pts-50 text-pts-700">
+        <%= @price_entries.size %> <%= @price_entries.size == 1 ? "precio disponible" : "precios disponibles" %>
+      </span>
+      <% if @drug.drug_page.present? %>
+        <%= link_to medicamento_path(@drug.drug_page.slug),
+            class: "inline-flex items-center gap-1 text-xs text-pts-500 hover:text-pts-600 transition-colors" do %>
+          <span>ℹ</span> Ver ficha educativa
         <% end %>
-      </div>
-      <div class="flex flex-col items-end gap-2">
-        <div class="flex flex-wrap gap-2 justify-end">
-          <% if @drug.requires_prescription? %>
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700">
-              Requiere receta
-            </span>
-          <% end %>
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pts-50 text-pts-700">
-            <%= @price_entries.size %> <%= @price_entries.size == 1 ? "precio disponible" : "precios disponibles" %>
-          </span>
-        </div>
-        <%# Botón guardar — se actualiza via Turbo Stream %>
-        <% saved = user_signed_in? && current_user.user_medications.exists?(drug: @drug) %>
-        <%= render "save_button", drug: @drug, saved: saved %>
-      </div>
+      <% end %>
     </div>
+
+    <%# Botones de acción %>
+    <div class="flex items-center gap-3 mt-4" data-controller="share">
+      <a href="#"
+         data-action="click->share#share"
+         class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-pts-200
+                text-sm text-pts-600 hover:border-pts-400 hover:text-pts-700 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+        </svg>
+        <span data-share-target="label">Compartir</span>
+      </a>
+
+      <% saved = user_signed_in? && current_user.user_medications.exists?(drug: @drug) %>
+      <%= render "save_button", drug: @drug, saved: saved %>
+    </div>
+
   </header>
 
-  <%# ── Barra de controles: filtros + ordenamiento + toggle de vista ── %>
+  <%# ── Barra de controles: filtros + toggle de vista + ordenamiento ── %>
   <div class="mb-6 flex flex-col gap-3">
 
-    <%# Fila superior: filtros y toggle de vista %>
-    <div class="flex flex-wrap items-center justify-between gap-3">
+    <%# Filtros de tipo %>
+    <div class="flex flex-wrap gap-2">
+      <% [["todos", "Todos"], ["genericos", "Genéricos"], ["innovador", "Referencia"], ["promocion", "Con promoción"]].each do |type, label| %>
+        <button type="button"
+                class="px-3 py-1.5 text-sm font-medium rounded-lg border transition-colors
+                       <%= type == 'todos' ? 'bg-pts-500 text-white border-pts-500' : 'text-pts-700 border-pts-200 hover:border-pts-400' %>"
+                data-comparisons-target="filterBtn"
+                data-filter-type="<%= type %>"
+                data-action="click->comparisons#filter">
+          <%= label %>
+        </button>
+      <% end %>
+    </div>
 
-      <%# Filtros de tipo %>
-      <div class="flex flex-wrap gap-2">
-        <% [["todos", "Todos"], ["genericos", "Genéricos"], ["innovador", "Referencia"], ["promocion", "Con promoción"]].each do |type, label| %>
-          <button type="button"
-                  class="px-3 py-1.5 text-sm font-medium rounded-lg border transition-colors
-                         <%= type == 'todos' ? 'bg-pts-500 text-white border-pts-500' : 'text-pts-700 border-pts-200 hover:border-pts-400' %>"
-                  data-comparisons-target="filterBtn"
-                  data-filter-type="<%= type %>"
-                  data-action="click->comparisons#filter">
-            <%= label %>
-          </button>
-        <% end %>
+    <%# Toggle vista + Ordenar — misma fila %>
+    <div class="flex items-center justify-between gap-3 flex-wrap">
+
+      <div class="flex items-center gap-2">
+        <label class="text-xs text-pts-600 whitespace-nowrap">Ordenar por</label>
+        <select class="text-sm border border-pts-200 rounded-lg px-3 py-1.5 text-pts-800
+                       focus:outline-none focus:ring-2 focus:ring-pts-400"
+                data-comparisons-target="sortSelect"
+                data-action="change->comparisons#sort">
+          <option value="precio_pieza">Precio por pieza</option>
+          <option value="precio_caja">Precio por caja</option>
+          <option value="nombre">Nombre del oferente</option>
+        </select>
       </div>
 
-      <%# Toggle tarjetas / tabla %>
       <div class="flex rounded-lg border border-pts-200 overflow-hidden shrink-0">
         <button type="button"
                 class="px-3 py-1.5 text-sm font-medium transition-colors bg-pts-500 text-white border-pts-500"
                 data-comparisons-target="viewBtn"
                 data-view="cards"
-                data-action="click->comparisons#toggleView"
-                title="Vista de tarjetas">
+                data-action="click->comparisons#toggleView">
           ▦ Tarjetas
         </button>
         <button type="button"
                 class="px-3 py-1.5 text-sm font-medium transition-colors text-pts-600 border-l border-pts-200 hover:bg-pts-50"
                 data-comparisons-target="viewBtn"
                 data-view="table"
-                data-action="click->comparisons#toggleView"
-                title="Vista de tabla">
+                data-action="click->comparisons#toggleView">
           ≡ Tabla
         </button>
       </div>
-    </div>
 
-    <%# Fila inferior: ordenamiento (solo relevante en vista tarjetas) %>
-    <div class="flex items-center gap-2">
-      <label class="text-xs text-pts-600 whitespace-nowrap">Ordenar por</label>
-      <select class="text-sm border border-pts-200 rounded-lg px-3 py-1.5 text-pts-800
-                     focus:outline-none focus:ring-2 focus:ring-pts-400"
-              data-comparisons-target="sortSelect"
-              data-action="change->comparisons#sort">
-        <option value="precio_pieza">Precio por pieza</option>
-        <option value="precio_caja">Precio por caja</option>
-        <option value="nombre">Nombre del oferente</option>
-      </select>
     </div>
   </div>
 

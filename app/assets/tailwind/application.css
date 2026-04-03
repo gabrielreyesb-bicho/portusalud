@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+:root { color-scheme: light; }
+
+button, input[type="submit"], input[type="button"], input[type="reset"] {
+  appearance: none;
+  -webkit-appearance: none;
+}
+
 @theme {
   /* Paleta portusalud — extraída del gradiente teal del logo */
   --color-pts-900: #0D3830;

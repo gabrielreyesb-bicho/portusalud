@@ -10,6 +10,7 @@ class SearchController < ApplicationController
                    .limit(RESULTS_PER_PAGE)
     else
       @drugs = Drug.none
+      @sample_drug = Drug.joins(:price_entries).order("RANDOM()").first
     end
   end
 

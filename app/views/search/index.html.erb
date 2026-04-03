@@ -9,9 +9,14 @@
 
   <%# Resultados %>
   <% if @query.length < 2 %>
-    <div class="text-center py-16 text-pts-600">
-      <p class="text-base">Escribe al menos 2 caracteres para buscar.</p>
+    <div class="text-center mb-6">
+      <p class="text-sm text-pts-500 font-medium">Escribe el nombre del medicamento que buscas</p>
     </div>
+
+    <% if @sample_drug %>
+      <p class="text-xs text-pts-400 text-center mb-3 uppercase tracking-wide">Ejemplo de lo que verás</p>
+      <%= render "drug_card", drug: @sample_drug %>
+    <% end %>
 
   <% elsif @drugs.none? %>
     <div class="text-center py-16">
