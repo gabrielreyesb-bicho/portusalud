@@ -41,3 +41,4 @@
 # Documentos de arquitectura — no son parte del código
 /*.docx
 /*.pdf
+*.DS_Store
