@@ -6,6 +6,8 @@ Rails.application.routes.draw do
     sign_in:  "sesion",
     sign_out: "salir",
     sign_up:  "registro"
+  }, controllers: {
+    omniauth_callbacks: "users/omniauth_callbacks"
   }
 
   # Buscador — núcleo del sistema

@@ -16,6 +16,8 @@ gem "bootsnap", require: false
 
 # Autenticación
 gem "devise"
+gem "omniauth-google-oauth2"
+gem "omniauth-rails_csrf_protection"
 
 # Búsqueda full-text con pg_trgm
 gem "pg_search"

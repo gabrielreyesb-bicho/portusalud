@@ -50,6 +50,8 @@
 
     <% end %>
 
+    <%= render "devise/shared/google_button" %>
+
     <div class="mt-6 text-center flex flex-col gap-2 text-sm">
       <%= link_to "¿Olvidaste tu contraseña?", new_user_password_path,
           class: "text-pts-600 hover:text-pts-500" %>

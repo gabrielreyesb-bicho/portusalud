@@ -56,6 +56,8 @@
 
     <% end %>
 
+    <%= render "devise/shared/google_button" %>
+
     <div class="mt-6 text-center text-sm">
       <%= link_to "¿Ya tienes cuenta? Inicia sesión", new_user_session_path,
           class: "text-pts-500 font-medium hover:text-pts-600" %>
