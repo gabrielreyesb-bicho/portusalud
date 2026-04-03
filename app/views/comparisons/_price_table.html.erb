@@ -35,8 +35,12 @@
             <%# Farmacia %>
             <td class="px-4 py-3 whitespace-nowrap">
               <div class="flex items-center gap-2">
-                <div class="w-7 h-7 rounded bg-pts-50 border border-pts-100 flex items-center justify-center text-xs font-semibold text-pts-500 shrink-0">
-                  <%= entry.pharmacy.name.split.map(&:first).first(2).join %>
+                <div class="w-7 h-7 rounded bg-pts-50 border border-pts-100 flex items-center justify-center text-xs font-semibold text-pts-500 shrink-0 overflow-hidden">
+                  <% if entry.pharmacy.logo.attached? %>
+                    <%= image_tag entry.pharmacy.logo, class: "w-full h-full object-contain", alt: entry.pharmacy.name %>
+                  <% else %>
+                    <%= entry.pharmacy.name.split.map(&:first).first(2).join %>
+                  <% end %>
                 </div>
                 <span class="font-medium text-pts-800"><%= entry.pharmacy.name %></span>
               </div>
@@ -94,8 +98,12 @@
               data-table-row>
             <td class="px-4 py-3 whitespace-nowrap">
               <div class="flex items-center gap-2">
-                <div class="w-7 h-7 rounded bg-blue-50 border border-blue-100 flex items-center justify-center text-xs font-semibold text-blue-500 shrink-0">
-                  <%= entry.pharmacy.name.split.map(&:first).first(2).join %>
+                <div class="w-7 h-7 rounded bg-blue-50 border border-blue-100 flex items-center justify-center text-xs font-semibold text-blue-500 shrink-0 overflow-hidden">
+                  <% if entry.pharmacy.logo.attached? %>
+                    <%= image_tag entry.pharmacy.logo, class: "w-full h-full object-contain", alt: entry.pharmacy.name %>
+                  <% else %>
+                    <%= entry.pharmacy.name.split.map(&:first).first(2).join %>
+                  <% end %>
                 </div>
                 <span class="font-medium text-pts-800"><%= entry.pharmacy.name %></span>
               </div>
