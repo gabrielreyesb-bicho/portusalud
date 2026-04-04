@@ -35,8 +35,9 @@ export default class extends Controller {
   }
 
   clearSuggestions() {
-    const el = document.getElementById("autocomplete_suggestions")
-    if (el) el.innerHTML = ""
+    if (this.hasSuggestionsTarget) {
+      this.suggestionsTarget.innerHTML = ""
+    }
   }
 
   handleOutsideClick(event) {

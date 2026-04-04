@@ -1,0 +1,66 @@
+<section class="py-12 sm:py-16 bg-white">
+  <div class="max-w-3xl mx-auto px-4">
+    <h2 class="text-xl sm:text-2xl font-semibold text-pts-800 text-center">¿Cuánto podrías ahorrar?</h2>
+
+    <p class="mt-3 text-center text-sm text-pts-600">
+      Metformina 850mg — el medicamento más usado para diabetes tipo 2
+    </p>
+
+    <% if @demo_ref_entry && @demo_gen_entry && @demo_savings_annual %>
+      <div class="mt-8 rounded-2xl border border-pts-200 bg-pts-50/60 p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 text-center sm:text-left">
+          <div class="flex-1">
+            <p class="text-xs uppercase tracking-wide text-pts-500 font-medium"><%= @demo_ref_entry.drug.name %>®</p>
+            <p class="text-2xl font-semibold text-pts-800 tabular-nums">
+              $<%= number_with_precision(@demo_ref_entry.price_per_box, precision: 2) %>
+            </p>
+            <p class="text-xs text-pts-600">por caja</p>
+          </div>
+
+          <div class="hidden sm:block text-pts-300 text-2xl font-light">vs</div>
+          <div class="sm:hidden border-t border-pts-200 pt-4"></div>
+
+          <div class="flex-1">
+            <p class="text-xs uppercase tracking-wide text-pts-500 font-medium">Genérico intercambiable</p>
+            <p class="text-2xl font-semibold text-pts-800 tabular-nums">
+              $<%= number_with_precision(@demo_gen_entry.price_per_box, precision: 2) %>
+            </p>
+            <p class="text-xs text-pts-600">por caja</p>
+          </div>
+        </div>
+
+        <div class="mt-6 pt-6 border-t border-pts-200 text-center">
+          <p class="text-sm text-pts-600">Ahorro estimado al año</p>
+          <p class="text-3xl font-semibold text-pts-600 tabular-nums">
+            $<%= number_with_delimiter(number_with_precision(@demo_savings_annual, precision: 0)) %>
+          </p>
+          <p class="text-xs text-pts-500 mt-1">Según el mejor precio de referencia vs genérico en nuestra base (30 piezas/mes).</p>
+        </div>
+      </div>
+
+      <% if @demo_comparison_drug %>
+        <div class="mt-8 text-center">
+          <%= link_to "Busca tu medicamento y calcula tu ahorro",
+              comparar_path(@demo_comparison_drug.slug),
+              class: "inline-flex items-center justify-center px-5 py-3 rounded-xl bg-pts-500 text-white font-medium text-sm hover:bg-pts-600 transition-colors" %>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="mt-8 rounded-2xl border border-pts-200 bg-pts-50/60 p-6 sm:p-8 text-center">
+        <p class="text-sm text-pts-600 mb-4">
+          Ejemplo ilustrativo con precios típicos en México:
+        </p>
+        <div class="flex flex-col sm:flex-row sm:justify-center gap-4 text-sm text-pts-700">
+          <span><strong>Glucophage®</strong> ~ $273 por caja</span>
+          <span class="hidden sm:inline text-pts-300">vs</span>
+          <span><strong>Genérico intercambiable</strong> ~ $96 por caja</span>
+        </div>
+        <p class="mt-4 text-lg font-semibold text-pts-600">Ahorro anual estimado: ~ $2,124</p>
+        <div class="mt-6">
+          <%= link_to "Busca tu medicamento y calcula tu ahorro", buscar_path(q: "metformina"),
+              class: "inline-flex items-center justify-center px-5 py-3 rounded-xl bg-pts-500 text-white font-medium text-sm hover:bg-pts-600 transition-colors" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</section>

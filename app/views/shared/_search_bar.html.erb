@@ -1,8 +1,9 @@
-<%# Partial reutilizable: home y página de resultados. Recibe local `query` con el valor actual. %>
-<div data-controller="search" class="relative w-full">
+<%# Partial reutilizable: home y página de resultados. Locals: query, autocomplete (default true). %>
+<% autocomplete = local_assigns.fetch(:autocomplete, true) %>
+<div class="relative w-full" <%= raw('data-controller="search"') if autocomplete %>>
   <%= form_with url: buscar_path, method: :get, data: { turbo: false } do |f| %>
-    <div class="flex gap-2">
-      <div class="relative flex-1">
+    <div class="flex flex-col sm:flex-row gap-2">
+      <div class="relative flex-1 min-w-0">
         <%= f.text_field :q,
             value: local_assigns[:query],
             placeholder: "Busca por medicamento o principio activo...",
@@ -10,22 +11,24 @@
             class: "w-full px-4 py-3 text-base border border-pts-300 rounded-xl
                     focus:outline-none focus:ring-2 focus:ring-pts-400 focus:border-pts-400
                     placeholder-pts-300 text-pts-900",
-            data: {
+            data: (autocomplete ? {
               search_target: "input",
               action: "input->search#autocomplete keydown.escape->search#clearSuggestions"
-            } %>
+            } : {}) %>
 
-        <%# Dropdown de autocompletado %>
-        <div id="autocomplete_suggestions"
-             class="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-pts-200
-                    rounded-xl shadow-lg overflow-hidden">
-        </div>
+        <% if autocomplete %>
+          <div id="autocomplete_suggestions"
+               data-search-target="suggestions"
+               class="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-pts-200
+                      rounded-xl shadow-lg overflow-hidden">
+          </div>
+        <% end %>
       </div>
 
       <%= f.submit "Buscar",
           class: "px-6 py-3 bg-pts-500 text-white font-medium rounded-xl
                   hover:bg-pts-600 active:bg-pts-700 transition-colors cursor-pointer
-                  whitespace-nowrap" %>
+                  whitespace-nowrap shrink-0" %>
     </div>
   <% end %>
 </div>
